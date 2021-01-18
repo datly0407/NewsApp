@@ -8,11 +8,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import com.datly.newsapp.R
 import com.datly.newsapp.data.NewsRepositoryFactory
 import com.datly.newsapp.data.model.Source
 import com.datly.newsapp.data.network.NewsService
 import com.datly.newsapp.data.network.NewsService.Companion.URL_LINK
+import com.datly.newsapp.view.adapter.NewsScreenAdapter
 import com.datly.newsapp.viewmodel.NewsViewModel
 import com.datly.newsapp.viewmodel.NewsViewModelFactory
 import kotlinx.android.synthetic.main.fragment_news.*
@@ -57,11 +59,14 @@ class NewsFragment: Fragment() {
 
     private fun setUpView() {
         newsViewModel.getSource()
+        val layoutManager = GridLayoutManager(activity, 2)
+        rv_news.layoutManager = layoutManager
+
     }
 
     private fun observeDataSource() {
         newsViewModel.sourceLiveData.observe(this, Observer {
-            fetchDataSource(it)
+            updateDataSource(it)
         })
     }
 
@@ -69,11 +74,12 @@ class NewsFragment: Fragment() {
         newsViewModel.sourceLiveData.removeObservers(this)
     }
 
-    private fun fetchDataSource(dataSource: Source) {
-        dataSource.data
-            .filter { item -> item.type.equals("section", ignoreCase = true) }
-            .forEach { text_view.append(it.type)
-                        text_view.append(System.lineSeparator()) }
+    private fun updateDataSource(dataSource: Source) {
+        val newsList = dataSource.data
+                .filter { item -> item.type.equals("section", ignoreCase = true) }[0].items
+
+        val adapter = NewsScreenAdapter(newsList)
+        rv_news.adapter = adapter
     }
 
 }
