@@ -1,6 +1,5 @@
 package com.datly.newsapp.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.datly.newsapp.data.NewsRepository

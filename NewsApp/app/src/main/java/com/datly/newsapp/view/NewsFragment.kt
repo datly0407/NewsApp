@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -15,6 +16,9 @@ import com.datly.newsapp.data.model.News
 import com.datly.newsapp.data.model.Result.Status.SUCCESS
 import com.datly.newsapp.data.model.Result.Status.LOADING
 import com.datly.newsapp.data.model.Result.Status.FAILED
+import com.datly.newsapp.network.Network
+import com.datly.newsapp.network.NetworkImpl
+import com.datly.newsapp.network.NetworkStatus
 import com.datly.newsapp.util.ScreenUtilImpl
 import com.datly.newsapp.view.adapter.NewsScreenAdapter
 import com.datly.newsapp.viewmodel.NewsViewModel
@@ -42,8 +46,8 @@ class NewsFragment: Fragment() {
         return inflater.inflate(R.layout.fragment_news, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onResume() {
+        super.onResume()
         setUpView()
     }
 
@@ -61,11 +65,26 @@ class NewsFragment: Fragment() {
                 when (result.status) {
                     SUCCESS -> {
                         result.data?.let { newsList -> retrieveNewsList(newsList) }
+                        news_screen_progress_bar.visibility = View.INVISIBLE
+                        fail_connection_message.visibility = View.INVISIBLE
                     }
                     FAILED -> {
-                        Log.d("DLTEST", "${result.message}")
+                        when (NetworkImpl().isNetworkConnected(requireActivity())) {
+                            NetworkStatus.CONNECTED -> {
+                                news_screen_progress_bar.visibility = View.VISIBLE
+                                fail_connection_message.visibility = View.INVISIBLE
+                                Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
+                            }
+
+                            NetworkStatus.NO_CONNECTION -> {
+                                news_screen_progress_bar.visibility = View.INVISIBLE
+                                fail_connection_message.visibility = View.VISIBLE
+                            }
+                        }
                     }
-                    LOADING -> {}
+                    LOADING -> {
+                        news_screen_progress_bar.visibility = View.VISIBLE
+                    }
                 }
             }
         })
