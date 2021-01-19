@@ -15,8 +15,16 @@ class NewsScreenAdapter(private val newsList: ArrayList<News>)
 
     override fun getItemCount() = newsList.size
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
-        val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.news_screen_item, parent, false)
+        val itemView = when (viewType) {
+            0 -> {
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.news_screen_header_item, parent, false)
+            }
+            else -> {
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.news_screen_item, parent, false)
+            }
+        }
         return NewsViewHolder(itemView)
     }
 
@@ -37,13 +45,16 @@ class NewsScreenAdapter(private val newsList: ArrayList<News>)
     ): RecyclerView.ViewHolder(view) {
         lateinit var newsImage: ImageView
         lateinit var newsHeadline: TextView
+        lateinit var newsSummary: TextView
 
         fun onBind(position: Int) {
             newsImage = itemView.findViewById(R.id.news_image)
             newsHeadline = itemView.findViewById(R.id.news_headline)
+            newsSummary = itemView.findViewById(R.id.news_summary)
 
             Picasso.get().load(newsList[position].tease).into(newsImage)
             newsHeadline.text = newsList[position].headline
+            newsSummary.text = newsList[position].summary
         }
     }
 }

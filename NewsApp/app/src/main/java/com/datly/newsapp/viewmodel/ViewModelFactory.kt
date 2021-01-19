@@ -3,7 +3,6 @@ package com.datly.newsapp.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.datly.newsapp.data.NewsRepository
-import kotlinx.coroutines.CoroutineScope
 
 class ViewModelFactory(
     private val newsRepository: NewsRepository) : ViewModelProvider.NewInstanceFactory() {

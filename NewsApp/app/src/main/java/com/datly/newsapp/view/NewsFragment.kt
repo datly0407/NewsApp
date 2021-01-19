@@ -25,6 +25,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class NewsFragment: Fragment() {
 
+    companion object {
+        const val FIRST_ITEM = 0
+    }
+
     private val newsViewModel: NewsViewModel by viewModel()
     private val networkUtil: Network by inject()
     private lateinit var adapter: NewsScreenAdapter
@@ -43,10 +47,27 @@ class NewsFragment: Fragment() {
     }
 
     private fun setUpView() {
+        var spanCount = 2
         val layoutManager: GridLayoutManager = when (ScreenUtilImpl.getInstance().isTablet(requireActivity())) {
-            true -> GridLayoutManager(context, 3)
-            else -> GridLayoutManager(context, 2)
+            true -> {
+                spanCount = 3
+                GridLayoutManager(context, spanCount) }
+            else -> GridLayoutManager(context, spanCount)
         }
+
+        layoutManager.spanSizeLookup = object: GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return when (position) {
+                    FIRST_ITEM -> {
+                        spanCount
+                    }
+                    else -> {
+                        1
+                    }
+                }
+            }
+        }
+
         rv_news.layoutManager = layoutManager
         adapter = NewsScreenAdapter(arrayListOf())
         rv_news.adapter = adapter

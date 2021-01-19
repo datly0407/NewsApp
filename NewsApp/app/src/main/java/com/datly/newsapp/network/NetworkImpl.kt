@@ -3,7 +3,6 @@ package com.datly.newsapp.network
 import android.app.Activity
 import android.content.Context
 import android.net.ConnectivityManager
-import com.datly.newsapp.network.Network
 
 class NetworkImpl: Network {
 

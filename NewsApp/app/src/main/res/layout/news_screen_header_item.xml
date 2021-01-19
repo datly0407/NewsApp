@@ -3,45 +3,51 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/item_layout_height"
-    android:padding="@dimen/item_padding">
+    android:layout_height="@dimen/header_layout_height">
 
     <ImageView
         android:id="@+id/news_image"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/news_image_layout_height"
+        android:layout_height="@dimen/header_image_layout_height"
         android:scaleType="centerCrop"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-    />
+        />
 
     <TextView
         android:id="@+id/news_headline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:includeFontPadding="false"
-        android:textSize="13sp"
+        android:textSize="15sp"
         android:textColor="@color/white"
+        android:layout_marginStart="@dimen/header_headline_margin_start"
+        android:layout_marginEnd="@dimen/header_headline_margin_end"
         android:textStyle="bold"
-        android:layout_marginTop="@dimen/news_headline_margin_top"
-        app:layout_constraintTop_toBottomOf="@id/news_image"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintBottom_toBottomOf="@id/news_image"
         app:layout_constraintStart_toStartOf="@id/news_image"
         app:layout_constraintEnd_toEndOf="@id/news_image"
-    />
+        />
 
     <TextView
         android:id="@+id/news_summary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:includeFontPadding="false"
-        android:textSize="12sp"
+        android:textSize="13sp"
         android:textColor="@color/white"
         android:maxLines="2"
         android:ellipsize="end"
-        android:layout_marginTop="@dimen/news_summary_margin_top"
-        app:layout_constraintTop_toBottomOf="@id/news_headline"
+        android:layout_marginTop="@dimen/header_summary_margin_top"
+        android:layout_marginStart="@dimen/header_summary_margin_start"
+        android:layout_marginEnd="@dimen/header_summary_margin_start"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintTop_toBottomOf="@id/news_image"
         app:layout_constraintStart_toStartOf="@id/news_image"
         app:layout_constraintEnd_toEndOf="@id/news_image"
-    />
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

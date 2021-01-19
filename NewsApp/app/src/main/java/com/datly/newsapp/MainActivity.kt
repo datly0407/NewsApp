@@ -3,9 +3,7 @@ package com.datly.newsapp
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.datly.newsapp.util.ScreenUtil
-import com.datly.newsapp.util.ScreenUtilImpl
 import org.koin.android.ext.android.inject
-
 
 class MainActivity : AppCompatActivity() {
 
