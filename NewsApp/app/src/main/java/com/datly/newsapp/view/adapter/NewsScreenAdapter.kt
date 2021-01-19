@@ -1,6 +1,5 @@
 package com.datly.newsapp.view.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,14 +10,14 @@ import com.datly.newsapp.R
 import com.datly.newsapp.data.model.News
 import com.squareup.picasso.Picasso
 
-class NewsScreenAdapter(private val newsList: List<News>)
+class NewsScreenAdapter(private val newsList: ArrayList<News>)
     : RecyclerView.Adapter<NewsScreenAdapter.NewsViewHolder>() {
 
     override fun getItemCount() = newsList.size
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
         val itemView = LayoutInflater.from(parent.context)
             .inflate(R.layout.news_screen_item, parent, false)
-        return NewsViewHolder(itemView, parent.context)
+        return NewsViewHolder(itemView)
     }
 
     override fun getItemViewType(position: Int) = position
@@ -26,9 +25,15 @@ class NewsScreenAdapter(private val newsList: List<News>)
         holder.onBind(position)
     }
 
+    fun addNewsList(newsList: List<News>) {
+        this.newsList.apply {
+            clear()
+            addAll(newsList)
+        }
+    }
+
     inner class NewsViewHolder(
-        view: View,
-        private val context: Context
+        view: View
     ): RecyclerView.ViewHolder(view) {
         lateinit var newsImage: ImageView
         lateinit var newsHeadline: TextView

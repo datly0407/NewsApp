@@ -11,26 +11,26 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.datly.newsapp.R
 import com.datly.newsapp.data.NewsRepositoryFactory
-import com.datly.newsapp.data.model.Source
-import com.datly.newsapp.data.network.NewsService
-import com.datly.newsapp.data.network.NewsService.Companion.URL_LINK
+import com.datly.newsapp.data.model.News
+import com.datly.newsapp.data.model.Result.Status.SUCCESS
+import com.datly.newsapp.data.model.Result.Status.LOADING
+import com.datly.newsapp.data.model.Result.Status.FAILED
+import com.datly.newsapp.util.ScreenUtilImpl
 import com.datly.newsapp.view.adapter.NewsScreenAdapter
 import com.datly.newsapp.viewmodel.NewsViewModel
-import com.datly.newsapp.viewmodel.NewsViewModelFactory
+import com.datly.newsapp.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_news.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class NewsFragment: Fragment() {
 
     private lateinit var newsViewModel: NewsViewModel
+    private lateinit var adapter: NewsScreenAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        newsViewModel = ViewModelProvider(this, NewsViewModelFactory(NewsRepositoryFactory.buildNewsRepository()))
+
+        newsViewModel = ViewModelProvider(this,
+            ViewModelFactory(NewsRepositoryFactory.buildNewsRepository()))
             .get(NewsViewModel::class.java)
     }
 
@@ -47,39 +47,35 @@ class NewsFragment: Fragment() {
         setUpView()
     }
 
-    override fun onResume() {
-        super.onResume()
-        observeDataSource()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        removeObserver()
-    }
-
     private fun setUpView() {
-        newsViewModel.getSource()
-        val layoutManager = GridLayoutManager(activity, 2)
+        val layoutManager: GridLayoutManager = when (ScreenUtilImpl.getInstance().isTablet(requireActivity())) {
+            true -> GridLayoutManager(context, 3)
+            else -> GridLayoutManager(context, 2)
+        }
         rv_news.layoutManager = layoutManager
+        adapter = NewsScreenAdapter(arrayListOf())
+        rv_news.adapter = adapter
 
-    }
-
-    private fun observeDataSource() {
-        newsViewModel.sourceLiveData.observe(this, Observer {
-            updateDataSource(it)
+        newsViewModel.fetchDataSource().observe(requireActivity(), Observer {
+            it?.let { result ->
+                when (result.status) {
+                    SUCCESS -> {
+                        result.data?.let { newsList -> retrieveNewsList(newsList) }
+                    }
+                    FAILED -> {
+                        Log.d("DLTEST", "${result.message}")
+                    }
+                    LOADING -> {}
+                }
+            }
         })
     }
 
-    private fun removeObserver() {
-        newsViewModel.sourceLiveData.removeObservers(this)
+    private fun retrieveNewsList(newsList: List<News>) {
+
+        adapter.apply {
+            addNewsList(newsList)
+            notifyDataSetChanged()
+        }
     }
-
-    private fun updateDataSource(dataSource: Source) {
-        val newsList = dataSource.data
-                .filter { item -> item.type.equals("section", ignoreCase = true) }[0].items
-
-        val adapter = NewsScreenAdapter(newsList)
-        rv_news.adapter = adapter
-    }
-
 }
