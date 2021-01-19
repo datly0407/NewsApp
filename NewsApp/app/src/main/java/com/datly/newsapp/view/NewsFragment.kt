@@ -1,42 +1,33 @@
 package com.datly.newsapp.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.datly.newsapp.R
-import com.datly.newsapp.data.NewsRepositoryFactory
 import com.datly.newsapp.data.model.News
 import com.datly.newsapp.data.model.Result.Status.SUCCESS
 import com.datly.newsapp.data.model.Result.Status.LOADING
 import com.datly.newsapp.data.model.Result.Status.FAILED
 import com.datly.newsapp.network.Network
-import com.datly.newsapp.network.NetworkImpl
-import com.datly.newsapp.network.NetworkStatus
+import com.datly.newsapp.network.NetworkStatus.NO_CONNECTION
+import com.datly.newsapp.network.NetworkStatus.CONNECTED
 import com.datly.newsapp.util.ScreenUtilImpl
 import com.datly.newsapp.view.adapter.NewsScreenAdapter
 import com.datly.newsapp.viewmodel.NewsViewModel
-import com.datly.newsapp.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_news.*
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class NewsFragment: Fragment() {
 
-    private lateinit var newsViewModel: NewsViewModel
+    private val newsViewModel: NewsViewModel by viewModel()
+    private val networkUtil: Network by inject()
     private lateinit var adapter: NewsScreenAdapter
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        newsViewModel = ViewModelProvider(this,
-            ViewModelFactory(NewsRepositoryFactory.buildNewsRepository()))
-            .get(NewsViewModel::class.java)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,14 +60,14 @@ class NewsFragment: Fragment() {
                         fail_connection_message.visibility = View.INVISIBLE
                     }
                     FAILED -> {
-                        when (NetworkImpl().isNetworkConnected(requireActivity())) {
-                            NetworkStatus.CONNECTED -> {
+                        when (networkUtil.isNetworkConnected(requireActivity())) {
+                            CONNECTED -> {
                                 news_screen_progress_bar.visibility = View.VISIBLE
                                 fail_connection_message.visibility = View.INVISIBLE
                                 Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
                             }
 
-                            NetworkStatus.NO_CONNECTION -> {
+                            NO_CONNECTION -> {
                                 news_screen_progress_bar.visibility = View.INVISIBLE
                                 fail_connection_message.visibility = View.VISIBLE
                             }
