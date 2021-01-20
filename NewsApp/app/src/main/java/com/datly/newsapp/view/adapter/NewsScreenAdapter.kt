@@ -5,10 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.datly.newsapp.R
 import com.datly.newsapp.data.model.News
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
+import java.lang.Exception
 
 class NewsScreenAdapter(private val newsList: ArrayList<News>)
     : RecyclerView.Adapter<NewsScreenAdapter.NewsViewHolder>() {
@@ -52,7 +55,19 @@ class NewsScreenAdapter(private val newsList: ArrayList<News>)
             newsHeadline = itemView.findViewById(R.id.news_headline)
             newsSummary = itemView.findViewById(R.id.news_summary)
 
-            Picasso.get().load(newsList[position].tease).into(newsImage)
+            Picasso.get().load(newsList[position].tease)
+                .placeholder(R.drawable.image_place_holder)
+                .into(newsImage, object : Callback {
+                    override fun onSuccess() {
+                        newsHeadline.visibility = View.VISIBLE
+                        newsSummary.visibility = View.VISIBLE
+                    }
+
+                    override fun onError(e: Exception?) {
+                        Toast.makeText(itemView.context, e?.printStackTrace().toString(), Toast.LENGTH_LONG).show()
+                    }
+
+                })
             newsHeadline.text = newsList[position].headline
             newsSummary.text = newsList[position].summary
         }
